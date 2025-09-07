@@ -41,8 +41,8 @@ class DenseRetrievalExactSearch(BaseSearch):
         self.results = {qid: {} for qid in query_ids}
         queries = [queries[qid] for qid in queries]
         query_embeddings = self.model.encode_queries(
-            task_name, 
-            queries, 
+            task_name=task_name, 
+            queries=queries, 
             batch_size=self.batch_size, 
             show_progress_bar=self.show_progress_bar, 
             convert_to_tensor=self.convert_to_tensor
@@ -65,11 +65,11 @@ class DenseRetrievalExactSearch(BaseSearch):
 
             # Encode chunk of corpus    
             sub_corpus_embeddings = self.model.encode_corpus(
-                task_name, 
-                corpus[corpus_start_idx:corpus_end_idx],
+                task_name=task_name, 
+                corpus=corpus[corpus_start_idx:corpus_end_idx],
                 batch_size=self.batch_size,
                 show_progress_bar=self.show_progress_bar, 
-                convert_to_tensor = self.convert_to_tensor
+                convert_to_tensor=self.convert_to_tensor
             )
 
             # Compute similarites using either cosine-similarity or dot product

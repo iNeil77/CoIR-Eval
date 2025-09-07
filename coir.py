@@ -1,5 +1,5 @@
 # Invocation example:
-# python coir.py --model_name "Qwen/Qwen3-Embedding-4B" --device "cuda:0" --padding_side "left" --batch_size 16 --num_batches_per_memory_clear 20
+# python coir.py --model_name "Qwen/Qwen3-Embedding-4B" --max_length 4096 --device "cuda:0" --padding_side "left" --batch_size 16 --num_batches_per_memory_clear 20
 
 import argparse
 import gc
@@ -19,7 +19,8 @@ logger = logging.getLogger(__name__)
 class YourCustomDEModel:
     def __init__(
             self, 
-            model_name="Qwen/Qwen3-Embedding-4B", 
+            model_name="Qwen/Qwen3-Embedding-4B",
+            max_length=4096,
             device="cuda:0", 
             padding_side='left', 
             num_batches_per_memory_clear=5
@@ -37,6 +38,7 @@ class YourCustomDEModel:
             padding_side=padding_side
         )
         self.tokenizer.add_eos_token = False
+        self.max_length = min(self.tokenizer.model_max_length, max_length)
         if self.model_name in instruction_map:
             self.instructions = instruction_map[self.model_name]
         else:
@@ -66,7 +68,6 @@ class YourCustomDEModel:
         task_name, 
         texts, 
         batch_size, 
-        max_length, 
         **kwargs
     ):
         all_emb = []
@@ -76,7 +77,7 @@ class YourCustomDEModel:
                 batch, 
                 padding=True, 
                 truncation=True, 
-                max_length=max_length, 
+                max_length=self.max_length, 
                 return_tensors="pt"
             ).to(self.device)
             outputs = self.model(**inputs)
@@ -105,7 +106,6 @@ class YourCustomDEModel:
             task_name, 
             queries, 
             batch_size=2, 
-            max_length=4096, 
             **kwargs
         ):
         if task_name in self.instructions:
@@ -117,18 +117,18 @@ class YourCustomDEModel:
             instruction = None
         queries = [f"Context:\n{query['context']}\n\nQuery:\n{query['text']}" if ((query['context'] is not None) and (query["context"]!="")) else f"Query:\n{query['text']}" for query in queries]
         queries = [f"Instruction:\n{instruction}\n\n{query}" if instruction is not None else query for query in queries]
-        return self._encode_texts(
-            prompts, 
+        return self._encode_texts( 
+            task_name,
+            queries,
             batch_size, 
-            max_length, 
             **kwargs
         )
 
     def encode_corpus(
             self, 
+            task_name,
             corpus, 
             batch_size=2, 
-            max_length=4096, 
             **kwargs
         ):
         if task_name in self.instructions:
@@ -141,9 +141,9 @@ class YourCustomDEModel:
         all_texts = [doc["title"] + "\n\n" + doc["text"] if ((doc["title"] is not None) and (doc["title"]!="")) else doc["text"] for doc in corpus]
         all_texts = [f"Instruction:\n{instruction}\n\nDocument:\n{doc}" if instruction is not None else doc for doc in all_texts]
         return self._encode_texts(
+            task_name,
             all_texts, 
             batch_size, 
-            max_length, 
             **kwargs
         )
 
@@ -155,7 +155,13 @@ def main():
         default="Qwen/Qwen3-Embedding-4B", 
         type=str, 
         help='Model name or path'
-    )    
+    )
+    parser.add_argument(
+        '--max_length', 
+        type=int, 
+        default=4096, 
+        help='Maximum seqence length supported for encoding queries and documents (instruction included)'
+    )
     parser.add_argument(
         '--device', 
         type=str, 
@@ -184,6 +190,7 @@ def main():
 
     model = YourCustomDEModel(
         model_name=args.model_name,
+        max_length=args.max_length,
         device=args.device,
         padding_side=args.padding_side,
         num_batches_per_memory_clear=args.num_batches_per_memory_clear
@@ -191,7 +198,7 @@ def main():
     tasks = get_tasks(
         tasks=[
             "codetrans-dl",
-            # "stackoverflow-qa",
+            "stackoverflow-qa",
             # "apps",
             # "codefeedback-mt",
             # "codefeedback-st",

@@ -103,6 +103,7 @@ The benchmark can be run as follows:
 
 ```bash
 python coir.py --model_name "Qwen/Qwen3-Embedding-4B" \
+    --max_length 4096 \
     --device "cuda:0" \
     --padding_side "left" \
     --batch_size 8 \
