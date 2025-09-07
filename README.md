@@ -14,7 +14,7 @@ pip install -r requirements.txt
 
 If your model supports custom instructions add them in `config/instruction_config.py`. The instructions are to be specified in a task-wise manner:
 
-```
+```python
 "YOUR_MODEL_HF_TAG" = {
     "codetrans-dl": {
         "queries": None,
@@ -101,7 +101,7 @@ If your model supports custom instructions add them in `config/instruction_confi
 
 The benchmark can be run as follows:
 
-```
+```bash
 python coir.py --model_name "Qwen/Qwen3-Embedding-4B" \
     --device "cuda:0" \
     --padding_side "left" \
