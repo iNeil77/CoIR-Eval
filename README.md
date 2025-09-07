@@ -15,7 +15,7 @@ pip install -r requirements.txt
 If your model supports custom instructions add them in `config/instruction_config.py`. The instructions are to be specified in a task-wise manner:
 
 ```python
-"YOUR_MODEL_HF_TAG" = {
+"YOUR_MODEL_HF_TAG" : {
     "codetrans-dl": {
         "queries": None,
         "docs": None

@@ -7,7 +7,6 @@ import logging
 import torch
 from coir.data_loader import get_tasks
 from coir.evaluation import COIR
-from coir.models import YourCustomDEModel
 from config.instruction_config import instruction_map
 from tqdm.auto import tqdm
 from transformers import AutoTokenizer, AutoModel

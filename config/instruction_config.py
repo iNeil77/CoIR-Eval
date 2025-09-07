@@ -1,5 +1,5 @@
 instruction_map = {
-    "default" = {
+    "default" : {
         "codetrans-dl": {
             "queries": None,
             "docs": None
@@ -81,7 +81,7 @@ instruction_map = {
             "docs": None
         }
     },
-    "Qwen/Qwen3-Embedding-0.6B" = {
+    "Qwen/Qwen3-Embedding-0.6B" : {
         "codetrans-dl": {
             "queries": "Given a web search query, retrieve relevant passages that answer the query",
             "docs": None
@@ -163,7 +163,7 @@ instruction_map = {
             "docs": None
         }
     },
-    "Qwen/Qwen3-Embedding-4B" = {
+    "Qwen/Qwen3-Embedding-4B" : {
         "codetrans-dl": {
             "queries": "Given a web search query, retrieve relevant passages that answer the query",
             "docs": None
@@ -245,7 +245,7 @@ instruction_map = {
             "docs": None
         }
     },
-    "Qwen/Qwen3-Embedding-8B" = {
+    "Qwen/Qwen3-Embedding-8B" : {
         "codetrans-dl": {
             "queries": "Given a web search query, retrieve relevant passages that answer the query",
             "docs": None
