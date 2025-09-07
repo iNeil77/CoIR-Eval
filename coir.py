@@ -116,7 +116,7 @@ class YourCustomDEModel:
                 instruction = None  
         else:
             instruction = None
-        queries = [f"Context:\n{query['context']}\n\nQuery:\n{query['text']}" if ((query["context"] is not None) and (query["context"]!="")) else f"Query:\n{query["text"]}" for query in queries]
+        queries = [f"Context:\n{query['context']}\n\nQuery:\n{query['text']}" if ((query['context'] is not None) and (query["context"]!="")) else f"Query:\n{query['text']}" for query in queries]
         queries = [f"Instruction:\n{instruction}\n\n{query}" if instruction is not None else query for query in queries]
         return self._encode_texts(
             prompts, 
