@@ -1,8 +1,16 @@
 # Description
 
-This is a modification of the original [CoIR](https://github.com/CoIR-team/coir/) repository with a few small fixes and geared towards instruction-aware embedding models.
+This is a modification of the original [CoIR](https://github.com/CoIR-team/coir/) repository with a few small fixes and geared towards instruction-aware autoregressive transformer-based embedding models.
 
-# Evaluation
+# Installation
+
+Install dependencies using `pip` as follows:
+
+```
+pip install -r requirements.txt
+```
+
+# Adding Models and Evaluation
 
 The benchmark can be run as follows:
 

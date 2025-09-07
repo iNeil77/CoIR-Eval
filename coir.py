@@ -59,6 +59,7 @@ class YourCustomDEModel:
     @torch.inference_mode()
     def _encode_texts(
         self, 
+        task_name, 
         texts, 
         batch_size, 
         max_length, 
@@ -97,6 +98,7 @@ class YourCustomDEModel:
 
     def encode_queries(
             self, 
+            task_name, 
             queries, 
             instruction="Retrieve relevant passages for QA", 
             batch_size=2, 

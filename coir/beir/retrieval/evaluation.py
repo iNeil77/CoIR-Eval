@@ -8,7 +8,8 @@ logger = logging.getLogger(__name__)
 
 class EvaluateRetrieval:
     
-    def __init__(self, retriever: BaseSearch = None, k_values: List[int] = [1,3,5,10,100,1000], score_function: str = "cos_sim"):
+    def __init__(self, task_name, retriever: BaseSearch = None, k_values: List[int] = [1,3,5,10,100,1000], score_function: str = "cos_sim"):
+        self.task_name = task_name
         self.k_values = k_values
         self.top_k = max(k_values)
         self.retriever = retriever
@@ -17,7 +18,7 @@ class EvaluateRetrieval:
     def retrieve(self, corpus: Dict[str, Dict[str, str]], queries: Dict[str, str], **kwargs) -> Dict[str, Dict[str, float]]:
         if not self.retriever:
             raise ValueError("Model/Technique has not been provided!")
-        return self.retriever.search(corpus, queries, self.top_k, self.score_function, **kwargs)
+        return self.retriever.search(self.task_name, corpus, queries, self.top_k, self.score_function, **kwargs)
     
     def rerank(self, 
             corpus: Dict[str, Dict[str, str]], 
@@ -35,7 +36,7 @@ class EvaluateRetrieval:
                 for doc_id in results[query_id]:
                     new_corpus[doc_id] = corpus[doc_id]
                     
-        return self.retriever.search(new_corpus, queries, top_k, self.score_function)
+        return self.retriever.search(self.task_name, new_corpus, queries, top_k, self.score_function)
 
     @staticmethod
     def evaluate(qrels: Dict[str, Dict[str, int]], 

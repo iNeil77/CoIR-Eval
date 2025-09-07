@@ -26,7 +26,7 @@ class COIR:
             corpus, queries, qrels = task_data
 
             # Initialize custom model
-            custom_model = DRES(model, batch_size=self.batch_size)
+            custom_model = DRES(task_name, model, batch_size=self.batch_size)
             retriever = EvaluateRetrieval(custom_model, score_function="cos_sim")
 
             # Retrieve results
