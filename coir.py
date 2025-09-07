@@ -199,14 +199,14 @@ def main():
         tasks=[
             "codetrans-dl",
             "stackoverflow-qa",
-            # "apps",
-            # "codefeedback-mt",
-            # "codefeedback-st",
-            # "codetrans-contest",
-            # "synthetic-text2sql",
-            # "cosqa",
-            # "codesearchnet",
-            # "codesearchnet-ccr"
+            "apps",
+            "codefeedback-mt",
+            "codefeedback-st",
+            "codetrans-contest",
+            "synthetic-text2sql",
+            "cosqa",
+            "codesearchnet",
+            "codesearchnet-ccr"
         ]
     )
     evaluation = COIR(
