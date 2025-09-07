@@ -12,6 +12,7 @@ class COIR:
     def __init__(self, tasks, batch_size):
         self.tasks = tasks
         self.batch_size = batch_size
+        self.custom_model = DRES(model, batch_size=self.batch_size)
 
     def run(self, model, output_folder: str):
         results = {}
@@ -24,10 +25,11 @@ class COIR:
                 continue
 
             corpus, queries, qrels = task_data
-
-            # Initialize custom model
-            custom_model = DRES(task_name, model, batch_size=self.batch_size)
-            retriever = EvaluateRetrieval(custom_model, score_function="cos_sim")
+            retriever = EvaluateRetrieval(
+                task_name, 
+                self.custom_model, 
+                score_function="cos_sim"
+            )
 
             # Retrieve results
             task_results = retriever.retrieve(corpus, queries)

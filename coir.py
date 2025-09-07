@@ -1,5 +1,5 @@
 # Invocation example:
-# python coir.py --model_name "berg-embed/qwen3_Base_Step250-train-medium" --device "cuda:0" --padding_side "left" --batch_size 16 --num_batches_per_memory_clear 5
+# python coir.py --model_name "Qwen/Qwen3-Embedding-4B" --device "cuda:0" --padding_side "left" --batch_size 16 --num_batches_per_memory_clear 20
 
 import argparse
 import gc
@@ -8,6 +8,7 @@ import torch
 from coir.data_loader import get_tasks
 from coir.evaluation import COIR
 from coir.models import YourCustomDEModel
+from config.instruction_config import instruction_map
 from tqdm.auto import tqdm
 from transformers import AutoTokenizer, AutoModel
 
@@ -37,6 +38,10 @@ class YourCustomDEModel:
             padding_side=padding_side
         )
         self.tokenizer.add_eos_token = False
+        if self.model_name in instruction_map:
+            self.instructions = instruction_map[self.model_name]
+        else:
+            self.instructions = instruction_map["default"]
 
     def _clear_gpu_memory(self):
         if torch.cuda.is_available():
@@ -100,13 +105,19 @@ class YourCustomDEModel:
             self, 
             task_name, 
             queries, 
-            instruction="Retrieve relevant passages for QA", 
             batch_size=2, 
             max_length=4096, 
             **kwargs
         ):
-        queries = [f"Context:\n{doc['context']}\n\nQuery:\n{doc['text']}" if ((doc["context"] is not None) and (doc["context"]!="")) else doc["text"] for doc in queries]
-        prompts = [self.tokenizer.apply_chat_template([{"role": "user", "content": instruction}, {"role": "assistant", "content": q}], tokenize=False) for q in queries]
+        if task_name in self.instructions:
+            if "queries" in self.instructions[task_name]:
+                instruction = self.instructions[task_name]["queries"]
+            else:
+                instruction = None  
+        else:
+            instruction = None
+        queries = [f"Context:\n{query['context']}\n\nQuery:\n{query['text']}" if ((query["context"] is not None) and (query["context"]!="")) else f"Query:\n{query["text"]}" for query in queries]
+        queries = [f"Instruction:\n{instruction}\n\n{query}" if instruction is not None else query for query in queries]
         return self._encode_texts(
             prompts, 
             batch_size, 
@@ -121,7 +132,15 @@ class YourCustomDEModel:
             max_length=4096, 
             **kwargs
         ):
+        if task_name in self.instructions:
+            if "docs" in self.instructions[task_name]:
+                instruction = self.instructions[task_name]["docs"]
+            else:
+                instruction = None  
+        else:
+            instruction = None
         all_texts = [doc["title"] + "\n\n" + doc["text"] if ((doc["title"] is not None) and (doc["title"]!="")) else doc["text"] for doc in corpus]
+        all_texts = [f"Instruction:\n{instruction}\n\nDocument:\n{doc}" if instruction is not None else doc for doc in all_texts]
         return self._encode_texts(
             all_texts, 
             batch_size, 
