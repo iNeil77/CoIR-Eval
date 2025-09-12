@@ -30,8 +30,9 @@ class YourCustomDEModel:
         self.model_name = model_name
         self.model = AutoModel.from_pretrained(
             self.model_name, 
-            trust_remote_code=True
-        ).to(self.device).eval()
+            trust_remote_code=True,
+            device_map=self.device
+        ).eval()
         self.tokenizer = AutoTokenizer.from_pretrained(
             model_name, 
             trust_remote_code=True, 
